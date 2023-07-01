@@ -1,0 +1,35 @@
+body > div.wrapper > div.content-wrapper {
+  height: 100vh;
+}
+.form-group.shiny-input-container {
+  margin: 0;
+}
+.content > .content-wrapper {
+  margin-left: 0;
+}
+.control-splitter {
+  width: 90%;
+  margin: 0 auto;
+  margin-top: 12px;
+}
+#sidebarCollapsed {
+  padding: 0;
+}
+.control-buttons {
+  display: flex;
+  margin-top: 6px;
+}
+.control-buttons > button {
+  width: 90px;
+}
+.wrapper > .content-wrapper > .content > .content-wrapper > .content {
+  padding: 0;
+}
+.wrapper > .content-wrapper > .content {
+  padding: 15px 0 0 0;
+}
+.control-download > a {
+  color: #444 !important;
+  width: 200px;
+  margin: 15px auto;
+}
