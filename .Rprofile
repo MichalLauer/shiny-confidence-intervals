@@ -1,7 +1,7 @@
 source("renv/activate.R")
 setHook("rstudio.sessionInit", function(newSession) {
   with(data = NULL, expr = {
-    renv::install("rstudioapi")
+    renv::install("rstudioapi", prompt = F)
     # Kill all terminals
     rstudioapi::terminalKill(rstudioapi::terminalList())
     # Open new terminal
