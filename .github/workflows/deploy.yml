@@ -43,7 +43,7 @@ jobs:
         run: Rscript -e "renv::install('rsconnect')"
 
       - name: Setup credentials
-        run: Rscript -e "rsconnect::setAccountInfo(name = 'laumi', token = ${{secrets.SHINYAPPS_TOKEN}}, secret = ${{secrets.SHINYAPPS_SECRET}})"
+        run: Rscript -e "rsconnect::setAccountInfo(name = 'laumi', token = '${{secrets.SHINYAPPS_TOKEN}}', secret = '${{secrets.SHINYAPPS_SECRET}})'"
 
       - name: Deploy
         run: Rscript -e "rsconnect::deployApp(appDir = './')"
