@@ -15,6 +15,9 @@ jobs:
         with:
           r-version: '4.3.0'
 
+      - name: Activate renv
+        uses: r-lib/actions/setup-renv@v2
+
       - name: Run testthat
         run: Rscript -e "source('control/testthat.R')"
 
