@@ -9,7 +9,6 @@ library(ggplot2)
 library(glue)
 library(DT)
 library(readr)
-library(testthat)
 # Load functions
 sapply(X = list.files(path = "R/", full.names = T, recursive = T),
        FUN = source)
