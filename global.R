@@ -8,6 +8,7 @@ library(distr6)
 library(ggplot2)
 library(DT)
 library(readr)
+library(testthat)
 # Data manipulation
 library(stringr)
 library(dplyr)
