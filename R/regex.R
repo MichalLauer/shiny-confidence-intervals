@@ -1,3 +1,5 @@
+require(stringr)
+
 text_to_distr <- function(text, .debug = F) {
   normal <- c("Normal()",
               "Normal(mean = \\d+)",
