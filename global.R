@@ -13,6 +13,4 @@ library(readr)
 # Load functions
 sapply(X = list.files(path = "R/", full.names = T, recursive = T),
        FUN = source)
-# Test app
-test_dir("tests/testthat/")
 # ------------------------------------------------------------------------------
