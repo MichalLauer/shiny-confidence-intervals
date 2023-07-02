@@ -1,4 +1,4 @@
-require(stringr)
+if (!require(stringr)) renv::install("stringr")
 
 text_to_distr <- function(text, .debug = F) {
   normal <- c("Normal()",
