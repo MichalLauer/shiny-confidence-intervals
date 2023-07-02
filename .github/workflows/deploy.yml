@@ -36,5 +36,8 @@ jobs:
         with:
           r-version: '4.3.0'
 
+      - name: Install curl
+        run: sudo apt-get install libcurl4-openssl-dev
+
       - name: Deploy
         run: Rscript -e "source('control/deploy.R')"
