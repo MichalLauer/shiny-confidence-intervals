@@ -1,1 +1,1 @@
-test_dir("tests/testthat/")
+test_dir("./tests/testthat/")
