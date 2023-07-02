@@ -9,5 +9,9 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
+
+      - name: Load renv
+        uses: r-lib/actions/setup-renv@v2
+
       - name: Run testthat
         run: Rscript -e "source('control/testthat.R')"
