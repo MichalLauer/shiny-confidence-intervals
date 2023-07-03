@@ -151,7 +151,7 @@ function(input, output, session) {
     # Plot
     ggplot(ci_print) +
       # Real mean
-      geom_vline(aes(xintercept = mu), linetype = 4, linewidth = 1, color = "red") +
+      geom_vline(aes(xintercept = mu), linetype = 4, linewidth = 1, color = "blue") +
       # Confidence interval
       geom_segment(aes(x = lower, xend = upper, y = i, yend = i, color = correct),
                    linewidth = 1) +
@@ -211,15 +211,59 @@ function(input, output, session) {
     )
   })
 
+  output$progress <- renderPlot({
+    ci <- CI()
+    if (nrow(ci) == 0) return()
+
+    ci |>
+      mutate(meancor = cumsum(correct)/seq_len(nrow(ci)),
+             correct = if_else(correct, "Within CI", "Outside CI"),
+             correct = factor(correct, levels = c("Within CI", "Outside CI"))) |>
+      ggplot(aes(x = i, y = meancor, group = 1)) +
+      # True %
+      geom_hline(aes(yintercept = 1 - isolate(input$alpha)),
+                 color = "blue", linetype = "dashed") +
+      # Generated points
+      geom_line(linetype = "dashed") +
+      geom_point(aes(shape = correct, color = correct), size = 2) +
+      scale_shape_manual(name = "CI Evaluation",
+                         values = c("Within CI" = 19,
+                                    "Outside CI" = 17),
+                         drop = F) +
+      scale_color_manual(name = "CI Evaluation",
+                         values = c("Within CI" = "green",
+                                    "Outside CI" = "red"),
+                         drop = F) +
+      scale_y_continuous(limits = c(0, 1), expand = expansion(add = .05),
+                         labels = scales::percent_format(),
+                         breaks = seq(0, 1, by = .2)) +
+      scale_x_continuous(limits = c(1, nrow(ci)), expand = expansion(add = .5),
+                         breaks = seq_len(nrow(ci))) +
+      theme_bw() +
+      theme(
+        panel.grid.minor = element_blank()
+      ) +
+      labs(
+        x = "Sample number", y = "Percentage of correct CIs",
+        caption = "Michal Lauer | laumi.me"
+      )
+
+  })
+
   sample_info <- list()
   output$samples <- renderPrint({
     ci <- CI()
     if (nrow(ci) == 0) return()
 
+    fmt <- \(x) str_pad(sprintf('%0.13f', x), width = 16)
+
     index <- nrow(ci)
     cinfo <- ci[index, ]
+    mark <- if_else(cinfo$correct, "√", "X")
     sample_info[index] <<- glue(
-      "Sample {index}: Mean = {cinfo$x_bar}"
+      "[{mark}] Sample {str_pad(index, width = 2)}: ",
+      "Mean = {fmt(cinfo$x_bar)} ",
+      "({fmt(cinfo$lower)}, {fmt(cinfo$upper)})"
     )
 
     invisible(lapply(rev(sample_info), cat, sep = "\n"))

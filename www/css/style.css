@@ -34,6 +34,6 @@ body > div.wrapper > div.content-wrapper {
   margin: 15px auto;
 }
 #samples {
-  max-height: 95px;
+  max-height: 10vh;
   overflow-anchor: auto;
 }
