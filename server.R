@@ -210,5 +210,19 @@ function(input, output, session) {
       "({frm(sd(fals$x_bar), 4)})\n",
     )
   })
+
+  sample_info <- list()
+  output$samples <- renderPrint({
+    ci <- CI()
+    if (nrow(ci) == 0) return()
+
+    index <- nrow(ci)
+    cinfo <- ci[index, ]
+    sample_info[index] <<- glue(
+      "Sample {index}: Mean = {cinfo$x_bar}"
+    )
+
+    invisible(lapply(rev(sample_info), cat, sep = "\n"))
+  })
   # ----------------------------------------------------------------------------
 }

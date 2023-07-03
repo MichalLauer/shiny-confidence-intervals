@@ -5,8 +5,10 @@ body <- dashboardBody(
   ),
   box(status = "primary", width = 12,
       plotOutput("plot")),
-  box(status = "primary", width = 12,
-      verbatimTextOutput("info"))
+  box(status = "primary", width = 6,
+      verbatimTextOutput(outputId = "info")),
+  box(status = "primary", width = 6,
+      verbatimTextOutput(outputId = "samples"))
 )
 
 sidebar <- dashboardSidebar(
