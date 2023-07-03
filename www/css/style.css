@@ -28,7 +28,7 @@ body > div.wrapper > div.content-wrapper {
 .wrapper > .content-wrapper > .content {
   padding: 15px 0 0 0;
 }
-.control-download > a {
+.control-download > a{
   color: #444 !important;
   width: 200px;
   margin: 15px auto;
@@ -36,4 +36,7 @@ body > div.wrapper > div.content-wrapper {
 #samples {
   max-height: 10vh;
   overflow-anchor: auto;
+}
+#gen_samples {
+  width: 200px;
 }

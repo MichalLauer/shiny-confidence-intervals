@@ -52,6 +52,12 @@ sidebar <- dashboardSidebar(
                    icon = icon("circle-play"),
                    disabled = T)
   ),
+  numericInput(inputId = "num_samples",
+               label = "Number of samples",
+               min = 1, value = 100, max = 1000, step = 1),
+  actionButton(inputId = "gen_samples",
+               label = "Generate samples",
+               icon = icon("gears")),
   hr(class = "control-splitter"),
   div(class = "control-buttons control-download",
       downloadButton(outputId = "download_data",
