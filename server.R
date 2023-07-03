@@ -249,7 +249,7 @@ function(input, output, session) {
                  color = "blue", linetype = "dashed") +
       # Generated points
       geom_line(linetype = "dashed") +
-      geom_point(aes(shape = correct, color = correct), size = 2) +
+      geom_point(aes(shape = correct, color = correct), size = 1.5) +
       scale_shape_manual(name = "CI Evaluation",
                          values = c("Within CI" = 19,
                                     "Outside CI" = 17),
@@ -262,7 +262,7 @@ function(input, output, session) {
                          labels = scales::percent_format(),
                          breaks = seq(0, 1, by = .2)) +
       scale_x_continuous(limits = c(1, nrow(ci)), expand = expansion(add = .5),
-                         breaks = seq_len(nrow(ci))) +
+                         labels = scales::label_number()) +
       theme_bw() +
       theme(
         panel.grid.minor = element_blank()
