@@ -3,6 +3,7 @@
 library(shiny)
 library(shinyjs)
 library(shinydashboard)
+library(waiter)
 # Shiny support
 library(distr6)
 library(ggplot2)

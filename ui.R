@@ -1,5 +1,7 @@
 body <- dashboardBody(
   shinyjs::useShinyjs(),
+  waiter::useWaiter(),
+  waiter::useHostess(),
   tags$head(
     tags$link(rel = "stylesheet", type = "text/css", href = "css/style.css")
   ),
@@ -54,7 +56,7 @@ sidebar <- dashboardSidebar(
   hr(class = "control-splitter"),
   numericInput(inputId = "num_samples",
                label = "Number of samples",
-               min = 1, value = 100, max = 1000, step = 1),
+               min = 1, value = 100, max = 10000, step = 1),
   actionButton(inputId = "gen_samples",
                label = "Generate samples",
                icon = icon("gears")),

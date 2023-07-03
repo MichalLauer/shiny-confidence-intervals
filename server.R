@@ -4,7 +4,17 @@ function(input, output, session) {
   INVALID <- reactive({invalidateLater(isolate(input$sim_speed)*1000)})
   RUN <- reactiveVal(FALSE)
   CI <- reactiveVal(tibble())
-
+  h1 <- Hostess$new()
+  h2 <- Hostess$new()
+  h3 <- Hostess$new()
+  h4 <- Hostess$new()
+  w <- Waiter$new(id = c("plot", "progress", "info", "samples"),
+                  html = list(
+                    h1$get_loader(preset = "fan"),
+                    h2$get_loader(preset = "fan"),
+                    h3$get_loader(preset = "fan"),
+                    h4$get_loader(preset = "fan")
+                  ))
   ### Buttons
   ### --------------------------------------------------------------------------
   observeEvent(input$distribution_modal, {
@@ -85,6 +95,7 @@ function(input, output, session) {
     disable("gen_samples")
   })
   observeEvent(input$gen_samples,  {
+    w$show()
     k <- isolate(input$num_samples)
     generate_ci(iterations = k)
   })
@@ -142,6 +153,10 @@ function(input, output, session) {
         correct = between(mu, lower, upper)
       )
       cis <- bind_rows(cis, ret)
+      h1$set(i*100/iterations)
+      h2$set(i*100/iterations)
+      h3$set(i*100/iterations)
+      h4$set(i*100/iterations)
     }
 
     CI(bind_rows(isolate(CI()), cis))
