@@ -39,8 +39,8 @@ jobs:
       - name: Install curl
         run: sudo apt-get install libcurl4-openssl-dev
 
-      - name: Install rsconnect
-        run: Rscript -e "renv::install('rsconnect')"
+      - name: Activate renv
+        uses: r-lib/actions/setup-renv@v2
 
       - name: Setup credentials
         run: Rscript -e "rsconnect::setAccountInfo(name = 'laumi', token = '${{secrets.SHINYAPPS_TOKEN}}', secret = '${{secrets.SHINYAPPS_SECRET}}')"
