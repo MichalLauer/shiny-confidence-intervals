@@ -6,7 +6,7 @@ body <- dashboardBody(
   box(status = "primary", width = 12,
       plotOutput("plot")),
   box(status = "primary", width = 12,
-      dataTableOutput("data"))
+      verbatimTextOutput("info"))
 )
 
 sidebar <- dashboardSidebar(

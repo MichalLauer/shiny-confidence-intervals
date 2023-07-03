@@ -191,5 +191,24 @@ function(input, output, session) {
         write_csv2(file)
     }
   )
+
+  output$info <- renderPrint({
+    ci <- CI()
+    if (nrow(ci) == 0) return()
+
+    corr <- filter(ci, correct)
+    fals <- filter(ci, !correct)
+    prop <- round(nrow(corr)*100/nrow(ci))
+
+    frm <- \(x, n = 2) sprintf(paste0('%0.', n, 'f'), x)
+    glue(
+      "Samples: {nrow(ci)}\n",
+      "Correct intervals: {nrow(corr)} ({frm(prop)} %)\n",
+      "Average (SD) guess in correct intervals: {frm(mean(corr$x_bar), 4)} ",
+      "({frm(sd(corr$x_bar), 4)})\n",
+      "Average (SD) guess in incorrect intervals: {frm(mean(fals$x_bar), 4)} ",
+      "({frm(sd(fals$x_bar), 4)})\n",
+    )
+  })
   # ----------------------------------------------------------------------------
 }
