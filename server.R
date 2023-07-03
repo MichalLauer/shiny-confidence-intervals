@@ -262,7 +262,7 @@ function(input, output, session) {
                          labels = scales::percent_format(),
                          breaks = seq(0, 1, by = .2)) +
       scale_x_continuous(limits = c(1, nrow(ci)), expand = expansion(add = .5),
-                         labels = scales::label_number()) +
+                         labels = scales::label_number(accuracy = 1)) +
       theme_bw() +
       theme(
         panel.grid.minor = element_blank()
