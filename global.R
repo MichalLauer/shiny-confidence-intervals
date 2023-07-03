@@ -2,6 +2,7 @@
 # Shiny libs
 library(shiny)
 library(shinyjs)
+library(shinyvalidate)
 library(shinydashboard)
 library(waiter)
 # Shiny support
