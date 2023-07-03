@@ -188,7 +188,7 @@ function(input, output, session) {
     content = function(file) {
       isolate(CI()) |>
         mutate(sample = paste0(unlist(sample), collapse  = ",")) |>
-        write_csv2(file)
+        write.csv2(file)
     }
   )
 

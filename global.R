@@ -6,8 +6,6 @@ library(shinydashboard)
 # Shiny support
 library(distr6)
 library(ggplot2)
-library(DT)
-library(readr)
 # Data manipulation
 library(stringr)
 library(dplyr)
