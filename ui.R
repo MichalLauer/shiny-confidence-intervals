@@ -32,7 +32,6 @@ sidebar <- dashboardSidebar(
   numericInput(inputId = "sim_speed",
                label = "Simulation speed (s)",
                min = 0.1, max = 5, value = 0.5, step = 0.1),
-  hr(class = "control-splitter"),
   div(class = "control-buttons",
       actionButton(inputId = "start",
                    label = "Start",
@@ -52,6 +51,7 @@ sidebar <- dashboardSidebar(
                    icon = icon("circle-play"),
                    disabled = T)
   ),
+  hr(class = "control-splitter"),
   numericInput(inputId = "num_samples",
                label = "Number of samples",
                min = 1, value = 100, max = 1000, step = 1),
