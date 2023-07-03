@@ -222,16 +222,16 @@ function(input, output, session) {
 
     corr <- filter(ci, correct)
     fals <- filter(ci, !correct)
-    prop <- round(nrow(corr)*100/nrow(ci))
+    prop <- round(nrow(corr)*100/nrow(ci), 4)
 
-    frm <- \(x, n = 2) sprintf(paste0('%0.', n, 'f'), x)
+    frm <- \(x, n = 4) sprintf(paste0('%0.', n, 'f'), x)
     glue(
       "Samples: {nrow(ci)}\n",
       "Correct intervals: {nrow(corr)} ({frm(prop)} %)\n",
-      "Average (SD) guess in correct intervals: {frm(mean(corr$x_bar), 4)} ",
-      "({frm(sd(corr$x_bar), 4)})\n",
-      "Average (SD) guess in incorrect intervals: {frm(mean(fals$x_bar), 4)} ",
-      "({frm(sd(fals$x_bar), 4)})\n",
+      "Average (SD) guess in correct intervals: {frm(mean(corr$x_bar))} ",
+      "({frm(sd(corr$x_bar))})\n",
+      "Average (SD) guess in incorrect intervals: {frm(mean(fals$x_bar))} ",
+      "({frm(sd(fals$x_bar))})\n",
     )
   })
 
