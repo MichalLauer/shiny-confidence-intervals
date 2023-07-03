@@ -5,7 +5,7 @@ function(input, output, session) {
   RUN <- reactiveVal(FALSE)
   CI <- reactiveVal(tibble())
 
-  ### Control buttons
+  ### Buttons
   ### --------------------------------------------------------------------------
   observeEvent(input$distribution_modal, {
     showModal(modalDialog(
@@ -38,6 +38,8 @@ function(input, output, session) {
     enable("stop")
     enable("pause")
     disable("continue")
+    disable("num_samples")
+    disable("gen_samples")
     # Other
     CI(tibble())
     RUN(TRUE)
@@ -55,6 +57,8 @@ function(input, output, session) {
     disable("stop")
     disable("pause")
     disable("continue")
+    enable("num_samples")
+    enable("gen_samples")
   })
   observeEvent(input$pause,  {
     RUN(FALSE)
@@ -65,6 +69,8 @@ function(input, output, session) {
     enable("stop")
     disable("pause")
     enable("continue")
+    enable("num_samples")
+    enable("gen_samples")
   })
   observeEvent(input$continue,  {
     RUN(TRUE)
@@ -75,16 +81,21 @@ function(input, output, session) {
     enable("stop")
     enable("pause")
     disable("continue")
+    disable("num_samples")
+    disable("gen_samples")
+  })
+  observeEvent(input$gen_samples,  {
+    k <- isolate(input$num_samples)
+    generate_ci(iterations = k)
   })
   ### --------------------------------------------------------------------------
 
-  observe({
-    INVALID()
-    if (!RUN()) return()
+  # Function that generates CI
+  generate_ci <- function(iterations = 1) {
+    cis <- tibble()
     # Get sample
     population <- text_to_distr(isolate(input$distribution))
     n <- isolate(input$sam_size)
-    sample <- population$rand(n)
     # Get parameters
     alpha <- isolate(input$alpha)
     type <- case_when(
@@ -98,36 +109,49 @@ function(input, output, session) {
     } else {
       sampling_distribution <- Normal$new()
     }
-    if (isolate(input$var_known)) {
-      var <- population$variance()
-    } else {
-      var <- var(sample)
+    # All the stuff above is deterministic, e.g. it does not rely on any
+    # random process
+    for (i in seq_len(iterations)) {
+      sample <- population$rand(n)
+      if (isolate(input$var_known)) {
+        var <- population$variance()
+      } else {
+        var <- var(sample)
+      }
+      x_bar <- mean(sample)
+      # CI
+      quantile <- sampling_distribution$quantile(1 - alpha/2)
+      mult <- var / sqrt(n)
+      lower <- x_bar - quantile*mult
+      upper <- x_bar + quantile*mult
+      # Return
+      ret <- tibble(
+        i = nrow(isolate(CI())) + nrow(cis) + 1,
+        pop = population$strprint(),
+        mu = population$mean(),
+        sigma2 = population$variance(),
+        var_known = isolate(input$var_known),
+        sample = list(as.character(sample)),
+        alpha = alpha,
+        x_bar = x_bar,
+        S = var,
+        n = n,
+        lower = lower,
+        upper = upper,
+        width = 2*quantile*mult,
+        correct = between(mu, lower, upper)
+      )
+      cis <- bind_rows(cis, ret)
     }
-    x_bar <- mean(sample)
-    # CI
-    quantile <- sampling_distribution$quantile(1 - alpha/2)
-    mult <- var / sqrt(n)
-    lower <- x_bar - quantile*mult
-    upper <- x_bar + quantile*mult
-    # Return
-    ret <- tibble(
-      i = nrow(isolate(CI())) + 1,
-      pop = population$strprint(),
-      mu = population$mean(),
-      sigma2 = population$variance(),
-      var_known = isolate(input$var_known),
-      sample = list(as.character(sample)),
-      alpha = alpha,
-      x_bar = x_bar,
-      S = var,
-      n = n,
-      lower = lower,
-      upper = upper,
-      width = 2*quantile*mult,
-      correct = between(mu, lower, upper)
-    )
-    CI(bind_rows(isolate(CI()), ret))
 
+    CI(bind_rows(isolate(CI()), cis))
+  }
+
+  # Generative loop
+  observe({
+    INVALID()
+    if (!RUN()) return()
+    generate_ci()
   })
 
   # Outputs
@@ -258,13 +282,16 @@ function(input, output, session) {
     fmt <- \(x) str_pad(sprintf('%0.13f', x), width = 16)
 
     index <- nrow(ci)
-    cinfo <- ci[index, ]
-    mark <- if_else(cinfo$correct, "√", "X")
-    sample_info[index] <<- glue(
-      "[{mark}] Sample {str_pad(index, width = 2)}: ",
-      "Mean = {fmt(cinfo$x_bar)} ",
-      "({fmt(cinfo$lower)}, {fmt(cinfo$upper)})"
-    )
+    index_seq <- (length(sample_info) + 1):index
+    for (i in index_seq) {
+      cinfo <- ci[i, ]
+      mark <- if_else(cinfo$correct, "√", "X")
+      sample_info[i] <<- glue(
+        "[{mark}] Sample {str_pad(i, width = 2)}: ",
+        "Mean = {fmt(cinfo$x_bar)} ",
+        "({fmt(cinfo$lower)}, {fmt(cinfo$upper)})"
+      )
+    }
 
     invisible(lapply(rev(sample_info), cat, sep = "\n"))
   })
