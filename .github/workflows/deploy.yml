@@ -28,6 +28,9 @@ jobs:
   deploy:
     needs: tests
     runs-on: ubuntu-latest
+    env:
+      SHINYAPPS_TOKEN: ${{ secrets.SHINYAPPS_TOKEN }}
+      SHINYAPPS_SECRET: ${{ secrets.SHINYAPPS_SECRET }}
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
@@ -43,8 +46,5 @@ jobs:
       - name: Activate renv
         uses: r-lib/actions/setup-renv@v2
 
-      - name: Setup credentials
-        run: Rscript -e "rsconnect::setAccountInfo(name = 'laumi', token = '${{secrets.SHINYAPPS_TOKEN}}', secret = '${{secrets.SHINYAPPS_SECRET}}')"
-
       - name: Deploy
-        run: Rscript -e "rsconnect::deployApp(appDir = './')"
+        run: Rscript -e "source('control/deploy.R')"
