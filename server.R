@@ -4,6 +4,9 @@ function(input, output, session) {
   INVALID <- reactive({invalidateLater(isolate(input$sim_speed)*1000)})
   RUN <- reactiveVal(FALSE)
   CI <- reactiveVal(tibble())
+
+  # {waiter}
+  # --------------------------------------------------------------------------
   h1 <- Hostess$new()
   h2 <- Hostess$new()
   h3 <- Hostess$new()
@@ -15,8 +18,21 @@ function(input, output, session) {
                     h3$get_loader(preset = "fan"),
                     h4$get_loader(preset = "fan")
                   ))
-  ### Buttons
-  ### --------------------------------------------------------------------------
+  # ----------------------------------------------------------------------------
+
+  # {shinyvalidate}
+  # --------------------------------------------------------------------------
+  iv <- InputValidator$new()
+  iv$add_rule("sam_size", sv_gte(1))
+  iv$add_rule("alpha", sv_between(0, 1))
+  iv$add_rule("sim_speed", sv_gte(0.01))
+  iv$add_rule("num_samples", sv_between(1, 1000))
+  iv$enable()
+  # ----------------------------------------------------------------------------
+  #
+
+  # Buttons
+  # --------------------------------------------------------------------------
   observeEvent(input$distribution_modal, {
     showModal(modalDialog(
       title = "Distributions",
@@ -37,6 +53,7 @@ function(input, output, session) {
     ))
   })
   observeEvent(input$start, {
+    req(iv$is_valid())
     # Control
     disable("distribution")
     disable("sam_size")
@@ -95,11 +112,12 @@ function(input, output, session) {
     disable("gen_samples")
   })
   observeEvent(input$gen_samples,  {
+    req(iv$is_valid())
     w$show()
     k <- isolate(input$num_samples)
     generate_ci(iterations = k)
   })
-  ### --------------------------------------------------------------------------
+  # ----------------------------------------------------------------------------
 
   # Function that generates CI
   generate_ci <- function(iterations = 1) {
@@ -165,8 +183,7 @@ function(input, output, session) {
   # Generative loop
   observe({
     INVALID()
-    if (!RUN()) return()
-    generate_ci()
+    if (RUN()) generate_ci()
   })
 
   # Outputs
