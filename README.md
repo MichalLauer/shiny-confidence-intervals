@@ -16,4 +16,3 @@ on the x axis
 	- [x] update graphs
 	- [x] Fix info text bug
 	- [x] Implement waiter
-- [x] Validate inputs
