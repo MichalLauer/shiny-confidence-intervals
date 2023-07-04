@@ -21,6 +21,8 @@ jobs:
 
       - name: Activate renv
         uses: r-lib/actions/setup-renv@v2
+        with:
+          cache-version: 0
 
       - name: Run testthat
         run: Rscript -e "source('control/testthat.R')"
@@ -46,5 +48,13 @@ jobs:
       - name: Activate renv
         uses: r-lib/actions/setup-renv@v2
 
+      - name: Create and populate .Renviron file
+        run: |
+          echo SHINYAPPS_TOKEN="$SHINYAPPS_TOKEN" >> ~/.Renviron
+          echo SHINYAPPS_SECRET="$SHINYAPPS_SECRET" >> ~/.Renviron
+
       - name: Deploy
         run: Rscript -e "source('control/deploy.R')"
+
+      - name: Clean up .Renviron
+        run: rm ~/.Renviron
