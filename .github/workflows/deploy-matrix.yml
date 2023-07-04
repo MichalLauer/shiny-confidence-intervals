@@ -1,4 +1,4 @@
-name: Deploy to shinyapps.io
+name: Deploy to shinyapps.io using a matrix
 on:
   push:
   workflow_dispatch:

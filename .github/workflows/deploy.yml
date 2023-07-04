@@ -52,6 +52,7 @@ jobs:
         run: |
           echo SHINYAPPS_TOKEN="$SHINYAPPS_TOKEN" >> ~/.Renviron
           echo SHINYAPPS_SECRET="$SHINYAPPS_SECRET" >> ~/.Renviron
+          Rscript -e "readRenviron('~/.Renviron')"
 
       - name: Deploy
         id: deployment
