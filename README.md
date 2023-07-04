@@ -1,6 +1,12 @@
 # Deploy
 
-Deployment is done fully through Github Actions
+Deployment is done fully through Github Actions.
+
+# CI/CD
+
+The Github Actions implemented in this project are definitely not optimal
+nor simplistic. I tried to use techniques which I have learned in a 
+udemy tutorial.
 
 # TODO
 
