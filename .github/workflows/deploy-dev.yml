@@ -7,7 +7,7 @@ jobs:
   tests:
     runs-on: ubuntu-latest
     container:
-      image: r-base:4.1.0
+      image: r-base:4.3.0
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
