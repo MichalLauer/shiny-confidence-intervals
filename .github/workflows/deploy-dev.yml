@@ -1,0 +1,25 @@
+name: Deploy to shinyapps.io
+on:
+  push:
+    branches:
+      - cicd
+runs:
+  using: "docker"
+  image: "rstudio/r-base:4.3.0"
+jobs:
+  tests:
+    runs-on: 'ubuntu-latest'
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Install curl
+        run: sudo apt-get install libcurl4-openssl-dev
+
+      - name: Activate renv
+        uses: r-lib/actions/setup-renv@v2
+        with:
+          cache-version: 0
+
+      - name: Run testthat
+        run: Rscript -e "source('control/testthat.R')"
