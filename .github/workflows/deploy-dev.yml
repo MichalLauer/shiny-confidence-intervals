@@ -14,8 +14,17 @@ jobs:
 
       - name: Activate renv
         run: Rscript -e "renv::activate()"
+
       - name: Load cached packages
+        id: renv-cache
         uses: actions/cache@v3
         with:
           path: /renv
           key: ${{ hashFiles('renv.lock') }}
+
+      - name: Install packages
+        if: steps.renv-cache.outputs.cache-hit != 'true'
+        run: Rscript -e "renv::restore(prompt = F)"
+
+      - name: Run testthat
+        run: Rscript -e "source('control/testthat.R')"
