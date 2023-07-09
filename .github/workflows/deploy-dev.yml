@@ -23,7 +23,7 @@ jobs:
           key: ${{ hashFiles('renv.lock') }}
 
       - name: Install packages
-        if: steps.renv-cache.outputs.cache-hit != 'true'
+        if: steps.renv-cache.outputs.cache-hit == 'false'
         run: Rscript -e "renv::restore(prompt = F)"
 
       - name: Run testthat
