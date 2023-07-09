@@ -69,6 +69,7 @@ function(input, output, session) {
     disable("gen_samples")
     # Other
     CI(tibble())
+    sample_info <<- list()
     RUN(TRUE)
   })
   observeEvent(input$stop,  {
