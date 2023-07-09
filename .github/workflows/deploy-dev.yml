@@ -12,9 +12,20 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v3
 
+      - name: Install curl
+        run: apt-get install libcurl4-openssl-dev
+
       - name: Activate renv
-        run: |
-          Rscript -e "renv::activate()"
+        run: Rscript -e "renv::activate()"
+
+     - name: Load cached packages
+       uses: actions/cache@v3
+       with:
+         path: ~/renv
+         key: ${{ hashFiles('~/renv.lock') }}
+
+     - name: Install packages
+       run: |
           Rscript -e "renv::restore(prompt = F)"
           Rscript -e "paste('Loaded renv:', packageVersion("renv"))"
 
