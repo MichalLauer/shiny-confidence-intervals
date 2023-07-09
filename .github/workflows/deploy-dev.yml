@@ -11,6 +11,7 @@ jobs:
     steps:
       - name: Install SSL
         run: |
+          sudo apt update
           sudo apt install libssl-dev
 
       - name: Checkout repo
