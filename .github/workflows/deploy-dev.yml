@@ -12,6 +12,10 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v3
 
-      - name: Install curl
-        run: sudo apt install curl
-
+      - name: Activate renv
+        run: Rscript -e "renv::activate()"
+      - name: Load cached packages
+        uses: actions/cache@v3
+          with:
+            path: /renv
+            key: ${{ hashFiles('renv.lock') }}
