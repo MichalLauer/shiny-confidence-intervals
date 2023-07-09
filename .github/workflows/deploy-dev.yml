@@ -11,7 +11,7 @@ jobs:
     steps:
       - name: Install SSL
         run: |
-          sudo apt-get install libssl-dev
+          sudo apt install libssl-dev
 
       - name: Checkout repo
         uses: actions/checkout@v3
