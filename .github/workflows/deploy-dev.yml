@@ -7,11 +7,11 @@ jobs:
   tests:
     runs-on: ubuntu-latest
     container:
-      image: r-base:4.3.0
+      image: rstudio/r-base:4.3.0-focal
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
 
       - name: Install curl
-        run: apt-get install -t testing curl
+        run: sudo apt install curl
 
