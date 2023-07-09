@@ -17,6 +17,9 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v3
 
+      - name: test
+        run: ls
+
       - name: Activate renv
         run: |
           Rscript -e "Sys.setenv(RENV_CONFIG_SANDBOX_ENABLED = FALSE)"
