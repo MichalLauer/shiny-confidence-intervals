@@ -18,19 +18,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Activate renv
-        run: |
-          Rscript -e "Sys.setenv(RENV_CONFIG_SANDBOX_ENABLED = FALSE)"
-          Rscript -e "renv::activate()"
+        uses: r-lib/actions/setup-renv@v2
 
-      - name: Load/Cache packages
-        id: renv-cache
-        uses: actions/cache@v3
-        with:
-          path: ./renv
-          key: ${{ hashFiles('renv.lock') }}
-
-      - name: test
-        run: |
-          pwd
-          ls -R renv/
-
+      - name: Run tests using testthat
+        run: Rscript -e "source('control/testthat.R')"
