@@ -33,5 +33,5 @@ jobs:
         if: steps.renv-cache.outputs.cache-hit != 'true'
         run: Rscript -e "renv::restore(prompt = F)"
 
-      - name: Run testthat
+      - name: Run tests using testthat
         run: Rscript -e "source('control/testthat.R')"
