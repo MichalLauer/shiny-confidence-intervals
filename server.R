@@ -268,42 +268,57 @@ function(input, output, session) {
     )
   })
 
-  output$progress <- renderPlot({
+  output$progress <- renderPlotly({
     ci <- CI()
     if (nrow(ci) == 0) return()
 
-    ci |>
-      mutate(meancor = cumsum(correct)/seq_len(nrow(ci)),
-             correct = if_else(correct, "Within CI", "Outside CI"),
-             correct = factor(correct, levels = c("Within CI", "Outside CI"))) |>
-      ggplot(aes(x = i, y = meancor, group = 1)) +
-      # True %
-      geom_hline(aes(yintercept = 1 - isolate(input$alpha)),
-                 color = "blue", linetype = "dashed") +
-      # Generated points
-      geom_line(linetype = "dashed") +
-      geom_point(aes(shape = correct, color = correct), size = 1.5) +
-      scale_shape_manual(name = "CI Evaluation",
-                         values = c("Within CI" = 19,
-                                    "Outside CI" = 17),
-                         drop = F) +
-      scale_color_manual(name = "CI Evaluation",
-                         values = c("Within CI" = "green",
-                                    "Outside CI" = "red"),
-                         drop = F) +
-      scale_y_continuous(limits = c(0, 1), expand = expansion(add = .05),
-                         labels = scales::percent_format(),
-                         breaks = seq(0, 1, by = .2)) +
-      scale_x_continuous(limits = c(1, nrow(ci)), expand = expansion(add = .5),
-                         labels = scales::label_number(accuracy = 1)) +
-      theme_bw() +
-      theme(
-        panel.grid.minor = element_blank()
-      ) +
-      labs(
-        x = "Sample number", y = "Percentage of correct CIs",
-        caption = "Michal Lauer | laumi.me"
-      )
+    hline <- (1 - isolate(input$alpha))*100
+    cip <-
+      ci |>
+      mutate(
+        across(
+          .cols = c("x_bar", "lower", "upper"),
+          .fns = ~ fmt(.x, 7)
+        ),
+        meancor = cumsum(correct)*100/seq_len(nrow(ci)),
+        correct = if_else(correct, "Within CI", "Outside CI"),
+        correct = factor(correct, levels = c("Within CI", "Outside CI")))
+
+    cip |>
+      plot_ly(type = "scatter", mode = 'lines') |>
+      add_trace(x = ~i, y = ~meancor, mode = 'lines',
+                line = list(color = "blue", width = 1)) |>
+      add_trace(x = ~i, y = ~meancor, mode = 'markers',
+                symbol = ~correct, symbols = c("circle", "x-thin"),
+                hovertemplate = glue("Sample: {cip$i}\n",
+                                     "Guess: {cip$x_bar}\n",
+                                     "CI: ({cip$lower}, {cip$upper})\n",
+                                     "Status: {cip$correct}\n",
+                                     "<extra></extra>")) |>
+      layout(
+        yaxis = list(
+          title = "Percentage of correct CIs",
+          range = list(0, 105),
+          ticksuffix = "%",
+          showgrid = F
+        ),
+        xaxis = list(
+          title = "Sample number",
+          range = list(1, max(ci$i)),
+          showgrid = F
+        ),
+        shapes = list(
+          list(
+            type = "line",
+            y0 = hline,
+            y1 = hline,
+            x0 = min(ci$i),
+            x1 = max(ci$i),
+            line = list(color = "red", dash = "dot")
+          )
+        ),
+        showlegend = FALSE)
+
 
   })
 
@@ -311,8 +326,6 @@ function(input, output, session) {
   output$samples <- renderPrint({
     ci <- CI()
     if (nrow(ci) == 0) return()
-
-    fmt <- \(x) str_pad(sprintf('%0.13f', x), width = 16)
 
     index <- nrow(ci)
     index_seq <- (length(sample_info) + 1):index

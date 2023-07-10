@@ -8,7 +8,7 @@ body <- dashboardBody(
   box(status = "primary", width = 12, height = "50vh",
       plotOutput("plot", height = "48vh")),
   box(status = "primary", width = 12, height = "30vh",
-      plotOutput("progress", height = "28vh")),
+      plotlyOutput("progress", height = "28vh")),
   box(status = "primary", width =  6, height = "12vh",
       verbatimTextOutput(outputId = "info")),
   box(status = "primary", width =  6, height = "12vh",
