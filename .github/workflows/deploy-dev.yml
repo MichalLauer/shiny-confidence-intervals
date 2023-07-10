@@ -49,8 +49,8 @@ jobs:
           context: .
           push: true
           tags: gcr.io/${{ env.GCP_PROJECT_ID }}/${{ env.GCP_IMAGE_NAME }}:latest
-            build-args: |
-              HTTP_PORT=8080
+          build-args: |
+            HTTP_PORT=8080
 
       - name: Deploy to Cloud Run
         uses: google-github-actions/deploy-cloudrun@main
