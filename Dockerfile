@@ -12,7 +12,6 @@ COPY /server.R ./server.R
 COPY /global.R ./global.R
 COPY /R ./R
 copy /www ./www
-copy /shiny-server.conf ./shiny-server.conf
 # Run renv
 COPY /renv.lock ./renv.lock
 # Download renv
@@ -22,4 +21,4 @@ RUN Rscript -e "remotes::install_github('rstudio/renv@v${RENV_VERSION}')"
 ENV RENV_PATHS_LIBRARY renv/library
 RUN Rscript -e 'renv::restore()'
 # Expose port
-EXPOSE 8080
+EXPOSE 3838
