@@ -10,6 +10,10 @@ udemy tutorial.
 
 # TODO
 
+- [ ] Use docker to deploy on GCP
+  - [x] Create a functional docker file
+  - [x] Update deploy-dev action
+  - [ ] Push to GCP
 - [ ] Add ram usage to the bottom
 - [ ] Why is there a delay?
 
