@@ -54,7 +54,7 @@ jobs:
         - name: Deploy Docker image
           run: |
             gcloud run deploy ${{ env.GCP_APP_NAME }} \
-            --image $IMAGE_NAME \
+            --image ${{ env.IMAGE_NAME }} \
             --region europe-west3 \
             --platform managed \
             --port=3838 \
