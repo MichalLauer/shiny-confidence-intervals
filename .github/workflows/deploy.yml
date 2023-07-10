@@ -25,6 +25,7 @@ jobs:
         run: Rscript -e "source('control/testthat.R')"
 
   deploy:
+    needs: tests
     runs-on: ubuntu-latest
     env:
       IMAGE_NAME: gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_APP_NAME }}
