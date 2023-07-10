@@ -20,3 +20,5 @@ RUN Rscript -e "install.packages('remotes', repos = c(CRAN = 'https://cloud.r-pr
 RUN Rscript -e "remotes::install_github('rstudio/renv@v${RENV_VERSION}')"
 ENV RENV_PATHS_LIBRARY renv/library
 RUN Rscript -e 'renv::restore()'
+# Expose port
+EXPOSE 8080
