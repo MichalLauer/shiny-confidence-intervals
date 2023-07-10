@@ -22,3 +22,41 @@ jobs:
 
       - name: Run tests using testthat
         run: Rscript -e "source('control/testthat.R')"
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      GCP_PROJECT_ID: laumi-me
+      GCP_IMAGE_NAME: shiny-confidence-intervals
+      GCP_SERVICE: shiny-confidence-intervals
+      GCP_REGION: europe-west3
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@master
+        with:
+          project_id: ${{ env.GCP_PROJECT_ID }}
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Configure docker for GCP
+        run: gcloud auth configure-docker
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: true
+          tags: gcr.io/${{ env.GCP_PROJECT_ID }}/${{ env.GCP_IMAGE_NAME }}:latest
+            build-args: |
+            HTTP_PORT=8080
+
+      - name: Deploy to Cloud Run
+        uses: google-github-actions/deploy-cloudrun@main
+        with:
+          image: gcr.io/${{ env.GCP_PROJECT_ID }}/${{ env.GCP_IMAGE_NAME }}:latest
+          service: ${{ env.GCP_SERVICE }}
+          region: ${{ env.GCP_REGION }}
+          platform: managed
+          allow-unauthenticated: true
+
