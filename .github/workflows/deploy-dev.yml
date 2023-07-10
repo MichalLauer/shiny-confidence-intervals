@@ -25,8 +25,10 @@ jobs:
     deploy:
         runs-on: ubuntu-latest
         env:
-          # IMAGE_NAME: europe-west3-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_APP_NAME }}
-          IMAGE_NAME: gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_APP_NAME }}
+          # IMAGE_NAME: gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_APP_NAME }}
+          IMAGE_NAME: europe-west3-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_APP_NAME }}
+          GCP_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
+          GCP_APP_NAME: {{ secrets.GCP_APP_NAME }}
         steps:
 
         - name: Checkout repository
@@ -35,7 +37,7 @@ jobs:
         - id: auth
           uses: google-github-actions/auth@v1
           with:
-            credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+            credentials_json: ${{ env.GCP_CREDENTIALS }}
 
         - name: Set up Cloud SDK
           uses: google-github-actions/setup-gcloud@v1
@@ -51,7 +53,7 @@ jobs:
 
         - name: Deploy Docker image
           run: |
-            gcloud run deploy ${{ secrets.GCP_PROJECT_ID }} \
+            gcloud run deploy ${{ env.GCP_APP_NAME }} \
             --image $IMAGE_NAME \
             --region europe-west3 \
             --platform managed \
