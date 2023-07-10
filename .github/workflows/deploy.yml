@@ -1,8 +1,9 @@
-name: Deploy to shinyapps.io
+name: Deploy to GCP
 on:
   push:
     branches:
       - main
+
 jobs:
   tests:
     runs-on: ubuntu-latest
@@ -22,51 +23,48 @@ jobs:
 
       - name: Run tests using testthat
         run: Rscript -e "source('control/testthat.R')"
-    deploy:
-        runs-on: ubuntu-latest
-        env:
-          # IMAGE_NAME: gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_APP_NAME }}
-          IMAGE_NAME: europe-west3-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_APP_NAME }}/${{ secrets.GCP_APP_NAME }}
-          GCP_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
-          GCP_APP_NAME: ${{ secrets.GCP_APP_NAME }}
-        steps:
 
-        - name: Checkout repository
-          uses: actions/checkout@v3
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      IMAGE_NAME: gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_APP_NAME }}
+      GCP_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
+      GCP_APP_NAME: ${{ secrets.GCP_APP_NAME }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-        - id: auth
-          uses: google-github-actions/auth@v1
-          with:
-            credentials_json: ${{ env.GCP_CREDENTIALS }}
+      - id: auth
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ env.GCP_CREDENTIALS }}
 
-        - name: Set up Cloud SDK
-          uses: google-github-actions/setup-gcloud@v1
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
 
-        - name: Docker auth
-          run: gcloud auth configure-docker europe-west3-docker.pkg.dev
+      - name: Docker auth
+        run: gcloud auth configure-docker europe-west3-docker.pkg.dev
 
-        - name: Configure Docker
-          run: gcloud auth configure-docker --quiet
+      - name: Configure Docker
+        run: gcloud auth configure-docker --quiet
 
-        - name: Set up Docker Buildx
-          uses: docker/setup-buildx-action@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
 
-        - name: Build and push
-          uses: docker/build-push-action@v4
-          with:
-            context: .
-            push: true
-            tags: ${{ env.IMAGE_NAME }}
-            cache-from: type=gha
-            cache-to: type=gha,mode=max
+      - name: Build and push
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          tags: ${{ env.IMAGE_NAME }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
-        - name: Deploy Docker image
-          run: |
-            gcloud run deploy ${{ env.GCP_APP_NAME }} \
-            --image ${{ env.IMAGE_NAME }} \
-            --region europe-west3 \
-            --platform managed \
-            --port=3838 \
-            --allow-unauthenticated
-
-
+      - name: Deploy Docker image
+        run: |
+          gcloud run deploy ${{ env.GCP_APP_NAME }} \
+          --image ${{ env.IMAGE_NAME }} \
+          --region europe-west3 \
+          --platform managed \
+          --port=3838 \
+          --allow-unauthenticated
