@@ -49,6 +49,11 @@ jobs:
           run: docker push $IMAGE_NAME
 
         - name: Deploy Docker image
-          run: gcloud run deploy ${{ secrets.GCP_PROJECT_ID }} --image $IMAGE_NAME --region europe-west3 --platform managed --port=3838
+          run: gcloud run deploy ${{ secrets.GCP_PROJECT_ID }} \
+                --image $IMAGE_NAME \
+                --region europe-west3 \
+                --platform managed \
+                --port=3838 \
+                --allow-unauthenticated
 
 
