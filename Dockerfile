@@ -12,6 +12,7 @@ COPY /server.R ./server.R
 COPY /global.R ./global.R
 COPY /R ./R
 copy /www ./www
+copy /shiny-server.conf ./shiny-server.conf
 # Run renv
 COPY /renv.lock ./renv.lock
 # Download renv
