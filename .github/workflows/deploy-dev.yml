@@ -25,7 +25,7 @@ jobs:
     deploy:
         runs-on: ubuntu-latest
         env:
-          IMAGE_NAME: europe-west3-docker.pkg.dev//${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_APP_NAME }}
+          IMAGE_NAME: europe-west3-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_APP_NAME }}
         steps:
 
         - name: Checkout repository
