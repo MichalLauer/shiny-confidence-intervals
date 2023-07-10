@@ -5,60 +5,68 @@ on:
       - main
 jobs:
   tests:
-    runs-on: 'ubuntu-latest'
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
-
-      - name: Install R
-        uses: r-lib/actions/setup-r@v2
-        with:
-          r-version: '4.3.0'
-
-      - name: Install curl
-        run: sudo apt-get install libcurl4-openssl-dev
-
-      - name: Activate renv
-        uses: r-lib/actions/setup-renv@v2
-        with:
-          cache-version: 0
-
-      - name: Run testthat
-        run: Rscript -e "source('control/testthat.R')"
-
-  deploy:
-    needs: tests
     runs-on: ubuntu-latest
-    env:
-      SHINYAPPS_TOKEN: ${{ secrets.SHINYAPPS_TOKEN }}
-      SHINYAPPS_SECRET: ${{ secrets.SHINYAPPS_SECRET }}
+    container:
+      image: rstudio/r-base:4.3.0-focal
     steps:
+      - name: Install SSL
+        run: |
+          sudo apt update
+          sudo apt install libssl-dev
+
       - name: Checkout repo
         uses: actions/checkout@v3
-
-      - name: Install R
-        uses: r-lib/actions/setup-r@v2
-        with:
-          r-version: '4.3.0'
-
-      - name: Install curl
-        run: sudo apt-get install libcurl4-openssl-dev
 
       - name: Activate renv
         uses: r-lib/actions/setup-renv@v2
 
-      - name: Create and populate .Renviron file
-        id: renviron-creation
-        run: |
-          echo SHINYAPPS_TOKEN="$SHINYAPPS_TOKEN" >> ~/.Renviron
-          echo SHINYAPPS_SECRET="$SHINYAPPS_SECRET" >> ~/.Renviron
-          Rscript -e "readRenviron('~/.Renviron')"
+      - name: Run tests using testthat
+        run: Rscript -e "source('control/testthat.R')"
+    deploy:
+        runs-on: ubuntu-latest
+        env:
+          # IMAGE_NAME: gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_APP_NAME }}
+          IMAGE_NAME: europe-west3-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_APP_NAME }}/${{ secrets.GCP_APP_NAME }}
+          GCP_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
+          GCP_APP_NAME: ${{ secrets.GCP_APP_NAME }}
+        steps:
 
-      - name: Deploy
-        id: deployment
-        if: steps.renviron-creation.outcome == 'success'
-        run: Rscript -e "source('control/deploy.R')"
+        - name: Checkout repository
+          uses: actions/checkout@v3
 
-      - name: Clean up .Renviron
-        if: always()
-        run: rm ~/.Renviron
+        - id: auth
+          uses: google-github-actions/auth@v1
+          with:
+            credentials_json: ${{ env.GCP_CREDENTIALS }}
+
+        - name: Set up Cloud SDK
+          uses: google-github-actions/setup-gcloud@v1
+
+        - name: Docker auth
+          run: gcloud auth configure-docker europe-west3-docker.pkg.dev
+
+        - name: Configure Docker
+          run: gcloud auth configure-docker --quiet
+
+        - name: Set up Docker Buildx
+          uses: docker/setup-buildx-action@v2
+
+        - name: Build and push
+          uses: docker/build-push-action@v4
+          with:
+            context: .
+            push: true
+            tags: ${{ env.IMAGE_NAME }}
+            cache-from: type=gha
+            cache-to: type=gha,mode=max
+
+        - name: Deploy Docker image
+          run: |
+            gcloud run deploy ${{ env.GCP_APP_NAME }} \
+            --image ${{ env.IMAGE_NAME }} \
+            --region europe-west3 \
+            --platform managed \
+            --port=3838 \
+            --allow-unauthenticated
+
+
