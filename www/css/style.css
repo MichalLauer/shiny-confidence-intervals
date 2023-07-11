@@ -38,6 +38,9 @@ body > div.wrapper > div.content-wrapper {
   max-height: 10vh;
   overflow-anchor: auto;
 }
+#info {
+ overflow-y: hidden;
+}
 #gen_samples {
   width: 200px;
 }
