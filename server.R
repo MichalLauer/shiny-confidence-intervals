@@ -292,7 +292,7 @@ function(input, output, session) {
                 hovertemplate = glue("Sample: {cip$i}\n",
                                      "Guess: {cip$x_bar}\n",
                                      "CI: ({cip$lower}, {cip$upper})\n",
-                                     "Success: {cip$meancor}\n",
+                                     "Success: {cip$meancor} %\n",
                                      "Status: {cip$correct}\n",
                                      "<extra></extra>")) |>
       layout(
