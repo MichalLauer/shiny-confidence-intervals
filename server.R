@@ -256,14 +256,14 @@ function(input, output, session) {
     corr <- filter(ci, correct)
     fals <- filter(ci, !correct)
     prop <- round(nrow(corr)*100/nrow(ci), 4)
+    streak_str <- streak(ci$correct)
 
     glue(
       "Samples: {nrow(ci)}\n",
       "Correct intervals: {nrow(corr)} ({fmt(prop, 7)} %)\n",
       "Average (SD) guess in correct intervals: {fmt(mean(corr$x_bar), 7)} ",
       "({fmt(sd(corr$x_bar), 7)})\n",
-      "Average (SD) guess in incorrect intervals: {fmt(mean(fals$x_bar), 7)} ",
-      "({fmt(sd(fals$x_bar), 7)})\n",
+      "{streak_str}"
     )
   })
 
@@ -304,7 +304,7 @@ function(input, output, session) {
         ),
         xaxis = list(
           title = "Sample number",
-          range = list(1, max(ci$i)),
+          range = list(.8, max(ci$i)),
           showgrid = F
         ),
         shapes = list(
@@ -312,7 +312,7 @@ function(input, output, session) {
             type = "line",
             y0 = hline,
             y1 = hline,
-            x0 = min(ci$i),
+            x0 = .8,
             x1 = max(ci$i),
             line = list(color = "red", dash = "dot")
           )

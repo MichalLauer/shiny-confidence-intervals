@@ -13,9 +13,9 @@ library(plotly)
 library(stringr)
 library(dplyr)
 library(glue)
+library(knitr, include.only = "combine_words")
 # Deploy
 library(testthat)
-library(rsconnect)
 # Load functions
 sapply(X = list.files(path = "R/", full.names = T, recursive = T),
        FUN = source)
