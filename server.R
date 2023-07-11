@@ -257,14 +257,13 @@ function(input, output, session) {
     fals <- filter(ci, !correct)
     prop <- round(nrow(corr)*100/nrow(ci), 4)
 
-    frm <- \(x, n = 4) sprintf(paste0('%0.', n, 'f'), x)
     glue(
       "Samples: {nrow(ci)}\n",
-      "Correct intervals: {nrow(corr)} ({frm(prop)} %)\n",
-      "Average (SD) guess in correct intervals: {frm(mean(corr$x_bar))} ",
-      "({frm(sd(corr$x_bar))})\n",
-      "Average (SD) guess in incorrect intervals: {frm(mean(fals$x_bar))} ",
-      "({frm(sd(fals$x_bar))})\n",
+      "Correct intervals: {nrow(corr)} ({fmt(prop, 7)} %)\n",
+      "Average (SD) guess in correct intervals: {fmt(mean(corr$x_bar), 7)} ",
+      "({fmt(sd(corr$x_bar), 7)})\n",
+      "Average (SD) guess in incorrect intervals: {fmt(mean(fals$x_bar), 7)} ",
+      "({fmt(sd(fals$x_bar), 7)})\n",
     )
   })
 
@@ -293,6 +292,7 @@ function(input, output, session) {
                 hovertemplate = glue("Sample: {cip$i}\n",
                                      "Guess: {cip$x_bar}\n",
                                      "CI: ({cip$lower}, {cip$upper})\n",
+                                     "Success: {cip$meancor}\n",
                                      "Status: {cip$correct}\n",
                                      "<extra></extra>")) |>
       layout(
