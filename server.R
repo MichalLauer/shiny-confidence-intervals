@@ -324,7 +324,7 @@ function(input, output, session) {
           showgrid = F
         ),
         xaxis = list(
-          title = "Sample number",
+          title = "Sample",
           range = list(.8, max(ci$i)),
           showgrid = F
         ),
