@@ -7,7 +7,6 @@ library(shinydashboard)
 library(waiter)
 # Shiny support
 library(distr6)
-library(ggplot2)
 library(plotly)
 # Data manipulation
 library(stringr)
