@@ -10,12 +10,8 @@ udemy tutorial.
 
 # TODO
 
-- [ ] Use docker to deploy on GCP
-  - [x] Create a functional docker file
-  - [x] Update deploy-dev action
-  - [ ] Push to GCP
-- [ ] Add ram usage to the bottom
-- [ ] Why is there a delay?
+- [ ] Scrollable y-axis for generated samples |--x--|
+- [ ] Add new tab with the distribution of generated estimates
 
 ## Finished
 
@@ -26,3 +22,7 @@ on the x axis
 	- [x] update graphs
 	- [x] Fix info text bug
 	- [x] Implement waiter
+- [x] Use docker to deploy on GCP
+  - [x] Create a functional docker file
+  - [x] Update deploy-dev action
+  - [x] Push to GCP

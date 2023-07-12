@@ -6,7 +6,7 @@ body <- dashboardBody(
     tags$link(rel = "stylesheet", type = "text/css", href = "css/style.css")
   ),
   box(status = "primary", width = 12, height = "50vh",
-      plotOutput("plot", height = "48vh")),
+      plotlyOutput("plot", height = "48vh")),
   box(status = "primary", width = 12, height = "30vh",
       plotlyOutput("progress", height = "28vh")),
   box(status = "primary", width =  6, height = "12vh",

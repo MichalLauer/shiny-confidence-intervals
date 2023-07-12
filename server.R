@@ -189,7 +189,7 @@ function(input, output, session) {
 
   # Outputs
   # ----------------------------------------------------------------------------
-  output$plot <- renderPlot({
+  output$plot <- renderPlotly({
     ci <- CI()
     if (nrow(ci) == 0) return()
     # Prepare data
@@ -202,40 +202,61 @@ function(input, output, session) {
     # Generate dynamic limits
     offset   <- max(ci$mu - ci$lower, ci$upper - ci$mu) * 1.2
     xlimits <- c(ci_info$mu - offset, ci_info$mu + offset)
-    ybreaks <- seq(from = if_else(nrow(ci) <= 10, 1, min(ci$i)),
-                   to = max(ci_print$i, 10))
-    ylimits <- c(min(ci_print$i), max(ci_print$i, 10))
+    ylimits <- c(min(ci_print$i) - 0.5, max(ci_print$i, 10) + 0.5)
     # Plot
-    ggplot(ci_print) +
-      # Real mean
-      geom_vline(aes(xintercept = mu), linetype = 4, linewidth = 1, color = "blue") +
+    plot_ly(ci_print, type = "scatter", mode = "markers",
+            colors = c("Within CI" = "green", "Outside CI" = "red")) |>
       # Confidence interval
-      geom_segment(aes(x = lower, xend = upper, y = i, yend = i, color = correct),
-                   linewidth = 1) +
-      # Computed sample mean
-      geom_point(aes(x = x_bar, y = i), size = 2) +
-      scale_y_continuous(breaks = ybreaks,
-                         limits = ylimits) +
-      scale_x_continuous(limits = xlimits,
-                         expand = c(0, 0)) +
-      scale_color_manual(name = "CI Evaluation",
-                         values = c("Within CI" = "green", "Outside CI" = "red"),
-                         drop = F) +
-      theme_bw() +
-      theme(
-        panel.grid.major.x = element_blank(),
-        panel.grid.minor.x = element_blank(),
-        panel.grid.major.y = element_blank(),
-        panel.grid.minor.y = element_blank()
-      ) +
-      labs(
-        title = "Simulation of confidence intervals (CI) and Type I error",
-        subtitle = glue("Population: {ci_info$pop} ,",
-                        "Variance: {if_else(ci_info$var_known, '', 'un')}known, ",
-                        "Sample size: {ci_info$n}, ",
-                        "Alpha: {ci_info$alpha}"),
-        x = "Mean", y = "Generated sample",
-        caption = "Michal Lauer | laumi.me"
+      add_segments(x = ~lower, xend = ~upper, y = ~i, yend = ~i,
+                   line = list(color = "blue", width = 1),
+                   hoverinfo = "skip") |>
+      # Lower bound
+      add_trace(x = ~lower, y = ~i,
+                marker = list(color = "blue", symbol = "line-ns-open"),
+                hovertemplate = paste(c("Sample: %{y}",
+                                        "Lower bound: %{x}",
+                                        "<extra></extra>"),
+                                      collapse = "\n")) |>
+      # Guess
+      add_trace(x = ~x_bar, y = ~i,
+                color = ~correct,
+                marker = list(symbol = "x"),
+                hovertemplate = paste(c("Sample: %{y}",
+                                        "Estimate: %{x}",
+                                        "<extra></extra>"),
+                                      collapse = "\n")) |>
+      # Upper bound
+      add_trace(x = ~upper, y = ~i,
+                marker = list(color = "blue", symbol = "line-ns-open"),
+                hovertemplate = paste(c("Sample: %{y}",
+                                        "Upper bound: %{x}",
+                                        "<extra></extra>"),
+                                      collapse = "\n")) |>
+      layout(
+        xaxis = list(
+          title = "Estimate",
+          range = xlimits,
+          showgrid = F,
+          zeroline = F
+        ),
+        yaxis = list(
+          title = "Sample",
+          range = ylimits,
+          dtick = 1,
+          tick0 = max(ci_print$i),
+          tickmode = "linear",
+          showgrid = F,
+          zeroline = F
+        ),
+        shapes = list(list(
+          type = "line",
+          y0 = 0,
+          y1 = max(10.5, ci_print$i + .5),
+          x0 = ci_info$mu,
+          x1 = ci_info$mu,
+          line = list(color = "black", dash = "dot")
+        )),
+        showlegend = F
       )
 
   })
