@@ -11,7 +11,7 @@ function(input, output, session) {
   h2 <- Hostess$new()
   h3 <- Hostess$new()
   h4 <- Hostess$new()
-  w <- Waiter$new(id = c("plot", "progress", "info", "samples"),
+  w <- Waiter$new(id = c("plot", "plot_distr", "progress", "info", "samples"),
                   html = list(
                     h1$get_loader(preset = "fan"),
                     h2$get_loader(preset = "fan"),
@@ -190,9 +190,9 @@ function(input, output, session) {
   # Outputs
   # ----------------------------------------------------------------------------
   output$plot <- renderPlotly({
-    ci <- CI()
-    if (nrow(ci) == 0) return()
+    req(nrow(CI()) > 0)
     # Prepare data
+    ci <- CI()
     ci_info <- ci[1,]
     ci_print <-
       ci |>
@@ -259,6 +259,41 @@ function(input, output, session) {
         showlegend = F
       )
 
+  })
+
+  output$plot_distr <- renderPlotly({
+    req(nrow(CI()) > 0)
+    # Prepare data
+    ci <- CI()
+    means <- ci$x_bar
+    mu <- unique(ci$mu)
+
+    gg <-
+      ggplot(data.frame(x = means), aes(x = x)) +
+      geom_histogram(aes(y = ..density..), fill = "lightblue", color = "black",
+                     linewidth = 0.1,
+                     bins = ceiling(1 + 3.3 * log(length(means), 10))) +
+      stat_density(geom = "line", position = "identity",
+                   bw = "SJ", color = "orange") +
+      scale_y_continuous() +
+      theme_bw() +
+      theme(
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank()
+      )
+
+    ggplotly(gg) |>
+      layout(
+        # True mean
+        shapes = list(list(
+          type = "line",
+          y0 = 0,
+          y1 = 1,
+          x0 = mu,
+          x1 = mu,
+          line = list(color = "black", dash = "dot")
+        ))
+      )
   })
 
   output$download_data <- downloadHandler(

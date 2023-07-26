@@ -5,8 +5,10 @@ body <- dashboardBody(
   tags$head(
     tags$link(rel = "stylesheet", type = "text/css", href = "css/style.css")
   ),
-  box(status = "primary", width = 12, height = "50vh",
-      plotlyOutput("plot", height = "48vh")),
+  tabBox(width = 12,
+         # height = "50vh",
+         tabPanel("Generated samples", plotlyOutput("plot")),
+         tabPanel("Distribution", plotlyOutput("plot_distr"))),
   box(status = "primary", width = 12, height = "30vh",
       plotlyOutput("progress", height = "28vh")),
   box(status = "primary", width =  6, height = "12vh",
